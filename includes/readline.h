@@ -158,4 +158,5 @@ t_node				*add_to_history(const char *str);
 void				prompte_mode_r(char c,char **str);
 void mode_r(t_line *line);
 void	ft_clear_mode_r(t_line *line);
+void		delet_mode_r(char **str,t_line *line);
 #endif

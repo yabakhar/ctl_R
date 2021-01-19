@@ -12,6 +12,8 @@
 
 #include "../includes/sh.h"
 
+
+
 void mode_r(t_line *line)
 {
     ft_clear_mode_r(line);
@@ -44,5 +46,20 @@ void prompte_mode_r(char c, char **str)
     else if (str && !*str)
         *str = ft_strdup(ttab);
     ft_putstr("bck-i-searKh: ");
+    ft_putstr(*str);
+}
+
+void		delet_mode_r(char **str,t_line *line)
+{
+	char	*tmp;
+    int     len;
+
+    len = ft_strlen(*str);
+	tmp = ft_strsub(*str, 0, len - 1);
+	ft_strdel(str);
+	*str = ft_strdup(tmp);
+    ft_strdel(&tmp);
+	tputs(tgoto(tgetstr("cm", 0), line->mode_r.x, line->mode_r.y), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
     ft_putstr(*str);
 }

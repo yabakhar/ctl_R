@@ -23,6 +23,19 @@ void	ft_print_print(char **str, t_line *line, char *buff)
 	ft_clear(line, *str);
 }
 
+
+int keyshandle3(t_line *line, char **str)
+{
+	int r;
+
+	r = 0;
+	if (line->r == DEL && line->slct == 0 && !line->mode_r.flag && (r = 1))
+		ft_delet(str, line);
+	else if (line->r == DEL && line->slct == 0 && line->mode_r.flag && (r = 1))
+		delet_mode_r(&line->mode_r.s,line);
+	return(r);
+}
+
 int		keyshendle2(t_line *line, char **str, int flag)
 {
 	int	r;
@@ -32,14 +45,12 @@ int		keyshendle2(t_line *line, char **str, int flag)
 		ft_alt_rth(*str, line);
 	else if (line->r == ALT_LFT && line->slct == 0 && (r = 1))
 		ft_alt_lft(*str, line);
-	else if (line->r == DEL && line->slct == 0 && (r = 1))
-		ft_delet(str, line);
-	else if (line->r == DELETE && line->slct == 0 && (r = 1))
-		ft_delet(str, line);
 	else if (line->r == CTRL_L && line->slct == 0 && (r = 1))
 		ft_ctl_l(line, *str);
 	else if (line->r == ALT_D && (!line->b_line) && line->slct == 0)
 		ft_ctl_d(flag);
+	else if (line->r == DEL && line->slct == 0 && (r = 1))
+		ft_delet(str, line);
 	return (r);
 }
 
@@ -92,6 +103,8 @@ int		ft_readline_builtines(int flag, char *buff, t_line *line,
 	if (keyshendle(line, &(*current)->tmp))
 		return (1);
 	else if (keyshendle1(line, &(*current)->tmp, current))
+		return (1);
+	else if (keyshandle3(line, &(*current)->tmp))
 		return (1);
 	else if (keyshendle2(line, &(*current)->tmp, flag))
 		return (1);
