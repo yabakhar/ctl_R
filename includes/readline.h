@@ -68,6 +68,7 @@ typedef struct		s_mode_r
 	int				flag;
 	char			*s;
 	char			c[2];
+	char			tmp;
 	int 			x;
 	int 			y;
 }					t_mode_r;
@@ -159,4 +160,5 @@ void				prompte_mode_r(char c,char **str);
 void mode_r(t_line *line);
 void	ft_clear_mode_r(t_line *line);
 void		delet_mode_r(char **str,t_line *line);
+int get_index_mode_r(t_line *line,int *index);
 #endif

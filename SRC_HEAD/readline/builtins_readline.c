@@ -97,9 +97,11 @@ int		keyshendle(t_line *line, char **str)
 	return (r);
 }
 
-int		ft_readline_builtines(int flag, char *buff, t_line *line,
-	t_node **current)
+int		ft_readline_builtines(int flag, char *buff, t_line *line, t_node **current)
 {
+	int k;
+
+	k = 0;
 	if (keyshendle(line, &(*current)->tmp))
 		return (1);
 	else if (keyshendle1(line, &(*current)->tmp, current))
@@ -117,9 +119,23 @@ int		ft_readline_builtines(int flag, char *buff, t_line *line,
 	}
 	else if (line->mode_r.flag)
 	{
-		tputs(tgoto(tgetstr("cm", 0), 0,
-        line->mode_r.y), 0, ft_output);
-		prompte_mode_r(line->r, &line->mode_r.s);
+		t_node *node;
+		line->mode_r.tmp = line->r;
+		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
+		prompte_mode_r(line->mode_r.tmp, &line->mode_r.s);
+		if (get_index_mode_r(line,&k))
+		{
+			node = add_to_history(NULL);
+			while (--k > 0)
+				node = (node)->next;
+			*current = node;
+		}
+		ft_history_goto(current, (*current), line);
+		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
+		ft_putstr("bck-i-search: ");
+   		ft_putstr(line->mode_r.s);
 		return(1);
 	}
 	return (0);

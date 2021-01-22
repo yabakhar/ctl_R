@@ -12,6 +12,25 @@
 
 #include "../includes/sh.h"
 
+int    get_index_mode_r(t_line *line,int *index)
+{
+    t_node *node = add_to_history(NULL);
+    int i = 0;
+    while (node)
+    {
+        i++;
+        if (ft_strstr(node->content, line->mode_r.s))
+        {
+            *index = i;
+            break;
+        }
+        node = node->next;
+    }
+    if ((*index) > 0)
+		return (1);
+	else
+    	return(0);
+}
 
 
 void mode_r(t_line *line)
@@ -45,7 +64,7 @@ void prompte_mode_r(char c, char **str)
         *str = ft_freejoin(*str, ttab, 0);
     else if (str && !*str)
         *str = ft_strdup(ttab);
-    ft_putstr("bck-i-searKh: ");
+    ft_putstr("bck-i-search: ");
     ft_putstr(*str);
 }
 
