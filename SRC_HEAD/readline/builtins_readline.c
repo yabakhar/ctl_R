@@ -130,12 +130,20 @@ int		ft_readline_builtines(int flag, char *buff, t_line *line, t_node **current)
 			while (--k > 0)
 				node = (node)->next;
 			*current = node;
+			ft_history_goto(current, (*current), line);
+			tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+			tputs(tgetstr("cd", 0), 0, ft_output);
+			ft_putstr("bck-i-search: ");
+   			ft_putstr(line->mode_r.s);
 		}
-		ft_history_goto(current, (*current), line);
-		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
-		tputs(tgetstr("cd", 0), 0, ft_output);
-		ft_putstr("bck-i-search: ");
-   		ft_putstr(line->mode_r.s);
+		else
+		{	 
+			tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+			tputs(tgetstr("cd", 0), 0, ft_output);
+			ft_putstr("failing ");
+			ft_putstr("bck-i-search: ");
+   			ft_putstr(line->mode_r.s);
+		}
 		return(1);
 	}
 	return (0);

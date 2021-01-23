@@ -16,6 +16,7 @@ int    get_index_mode_r(t_line *line,int *index)
 {
     t_node *node = add_to_history(NULL);
     int i = 0;
+    *index = 0;
     while (node)
     {
         i++;
@@ -51,6 +52,8 @@ void	ft_clear_mode_r(t_line *line)
 {
     init_mode_r(line);
     prompte_mode_r(0,&line->mode_r.s);
+    ft_putstr("bck-i-search: ");
+    ft_putstr(line->mode_r.s);
     line->mode_r.x = (int)ft_strlen("bck-i-search: ");
 }
 
@@ -64,8 +67,6 @@ void prompte_mode_r(char c, char **str)
         *str = ft_freejoin(*str, ttab, 0);
     else if (str && !*str)
         *str = ft_strdup(ttab);
-    ft_putstr("bck-i-search: ");
-    ft_putstr(*str);
 }
 
 void		delet_mode_r(char **str,t_line *line)
@@ -78,7 +79,18 @@ void		delet_mode_r(char **str,t_line *line)
 	ft_strdel(str);
 	*str = ft_strdup(tmp);
     ft_strdel(&tmp);
-	tputs(tgoto(tgetstr("cm", 0), line->mode_r.x, line->mode_r.y), 0, ft_output);
+	tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
 	tputs(tgetstr("cd", 0), 0, ft_output);
-    ft_putstr(*str);
+    if ((get_index_mode_r(line, &len)))
+    {
+	    ft_putstr("bck-i-search: ");
+   	    ft_putstr(line->mode_r.s);
+    }
+    else
+    {
+		ft_putstr("failing ");
+		ft_putstr("bck-i-search: ");
+   		ft_putstr(line->mode_r.s);
+    }
+    
 }
