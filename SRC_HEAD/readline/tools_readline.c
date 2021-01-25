@@ -29,6 +29,11 @@ void	cur_goto(t_line *line, int cursor)
 	int x;
 	int y;
 
+	if (line->mode_r.flag)
+	{
+		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
+	}
 	y = (line->c_v.y + (line->c_v.x + cursor) / line->col);
 	x = ((line->c_v.x + cursor) % line->col);
 	tputs(tgoto(tgetstr("cm", 0), x, y), 0, ft_output);

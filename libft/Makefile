@@ -93,7 +93,7 @@ FILE = ft_atoi.c \
 	   ft_putendl_fd_int.c \
 	   ft_freejoin.c 
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g
 OBJ = $(FILE:.c=.o)
 
 $(NAME): $(OBJ) libft.h

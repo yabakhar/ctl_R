@@ -45,7 +45,6 @@
 # define TRUE		1
 # define ALT_C		42947
 # define CTRL_L		12
-# define DELETE		2117294875
 
 typedef struct		s_node
 {
@@ -157,8 +156,9 @@ int					ft_readline_builtines(int flag, char *buff,
 	t_line *line, t_node **current);
 t_node				*add_to_history(const char *str);
 void				prompte_mode_r(char c,char **str);
-void mode_r(t_line *line);
-void	ft_clear_mode_r(t_line *line);
-void		delet_mode_r(char **str,t_line *line);
-int get_index_mode_r(t_line *line,int *index);
+void				mode_r(t_line *line);
+void				delet_mode_r(char **str,t_line *line);
+int					get_index_mode_r(t_line *line,int *index);
+void				print_prompte_(t_line *line, int error);
+void				search_mode_r(t_line *line, t_node **current);
 #endif

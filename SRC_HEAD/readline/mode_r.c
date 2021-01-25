@@ -33,13 +33,6 @@ int    get_index_mode_r(t_line *line,int *index)
     	return(0);
 }
 
-
-void mode_r(t_line *line)
-{
-    ft_clear_mode_r(line);
-    line->mode_r.flag = 1;
-}
-
 void	init_mode_r(t_line *line)
 {
 	line->mode_r.y = (line->c_o.y + line->index + 1);
@@ -48,13 +41,19 @@ void	init_mode_r(t_line *line)
         line->mode_r.y), 0, ft_output);
 }
 
-void	ft_clear_mode_r(t_line *line)
+void mode_r(t_line *line)
 {
-    init_mode_r(line);
-    prompte_mode_r(0,&line->mode_r.s);
-    ft_putstr("bck-i-search: ");
-    ft_putstr(line->mode_r.s);
-    line->mode_r.x = (int)ft_strlen("bck-i-search: ");
+    if (!line->mode_r.flag)
+    {
+        if (line->mode_r.s && *line->mode_r.s)
+            ft_strdel(&line->mode_r.s);
+        init_mode_r(line);
+        prompte_mode_r(0,&line->mode_r.s);
+        ft_putstr("bck-i-search: ");
+        ft_putstr(line->mode_r.s);
+        line->mode_r.x = (int)ft_strlen("bck-i-search: ");
+        line->mode_r.flag = 1;
+    }
 }
 
 void prompte_mode_r(char c, char **str)
@@ -69,6 +68,39 @@ void prompte_mode_r(char c, char **str)
         *str = ft_strdup(ttab);
 }
 
+
+void        print_prompte_(t_line *line, int error)
+{
+	tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+	tputs(tgetstr("cd", 0), 0, ft_output);
+    if (error)
+	    ft_putstr("failing ");
+	ft_putstr("bck-i-search: ");
+	ft_putstr(line->mode_r.s);
+}
+
+void        search_mode_r(t_line *line, t_node **current)
+{
+    t_node *node;
+    int k;
+
+	k = 0;
+    node = NULL;
+    line->mode_r.tmp = line->r;
+	prompte_mode_r(line->mode_r.tmp, &line->mode_r.s);
+	if (get_index_mode_r(line, &k))
+	{
+		node = add_to_history(NULL);
+		while (--k > 0)
+			node = (node)->next;
+		*current = node;
+		ft_history_goto(current, (*current), line);
+		print_prompte_(line, 0);
+	}
+	else
+		print_prompte_(line, 1);
+}
+
 void		delet_mode_r(char **str,t_line *line)
 {
 	char	*tmp;
@@ -81,16 +113,8 @@ void		delet_mode_r(char **str,t_line *line)
     ft_strdel(&tmp);
 	tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
 	tputs(tgetstr("cd", 0), 0, ft_output);
-    if ((get_index_mode_r(line, &len)))
-    {
-	    ft_putstr("bck-i-search: ");
-   	    ft_putstr(line->mode_r.s);
-    }
-    else
-    {
-		ft_putstr("failing ");
-		ft_putstr("bck-i-search: ");
-   		ft_putstr(line->mode_r.s);
-    }
-    
+    if (!(get_index_mode_r(line, &len)))
+        ft_putstr("failing ");
+	ft_putstr("bck-i-search: ");
+   	ft_putstr(line->mode_r.s);
 }
