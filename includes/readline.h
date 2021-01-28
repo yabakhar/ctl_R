@@ -161,4 +161,7 @@ void				delet_mode_r(char **str,t_line *line);
 int					get_index_mode_r(t_line *line,int *index);
 void				print_prompte_(t_line *line, int error);
 void				search_mode_r(t_line *line, t_node **current);
+void				get_posion_mode_r(t_line *line);
+void				ft_disable_mode_r(t_line *line);
 #endif
+// ft_putendl_fd((*current)->tmp,open("/dev/ttys003",O_RDWR));

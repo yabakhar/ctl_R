@@ -94,8 +94,6 @@ int		keyshendle(t_line *line, char **str)
 		ft_chack_selction(line, *str);
 	else if (line->r == ALT_C && (r = 1))
 		ft_copie(line, *str);
-	if (r && line->mode_r.flag)
-		line->mode_r.flag = 0;
 	return (r);
 }
 

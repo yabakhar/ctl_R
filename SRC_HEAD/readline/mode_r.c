@@ -12,6 +12,18 @@
 
 #include "../includes/sh.h"
 
+void	ft_disable_mode_r(t_line *line)
+{
+	if (line->mode_r.flag)
+	{
+		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
+		if (line->mode_r.s && *line->mode_r.s)
+			ft_strdel(&line->mode_r.s);
+		line->mode_r.flag = 0;
+	}
+}
+
 int    get_index_mode_r(t_line *line,int *index)
 {
     t_node *node = add_to_history(NULL);
@@ -33,25 +45,19 @@ int    get_index_mode_r(t_line *line,int *index)
     	return(0);
 }
 
-void	init_mode_r(t_line *line)
-{
-	line->mode_r.y = (line->c_o.y + line->index + 1);
-	line->mode_r.x = 0;
-	tputs(tgoto(tgetstr("cm", 0), line->mode_r.x,
-        line->mode_r.y), 0, ft_output);
-}
-
 void mode_r(t_line *line)
 {
     if (!line->mode_r.flag)
     {
         if (line->mode_r.s && *line->mode_r.s)
             ft_strdel(&line->mode_r.s);
-        init_mode_r(line);
+        get_posion_mode_r(line);
+		tputs(tgoto(tgetstr("cm", 0), 0,
+        	line->mode_r.y), 0, ft_output);
         prompte_mode_r(0,&line->mode_r.s);
         ft_putstr("bck-i-search: ");
         ft_putstr(line->mode_r.s);
-        line->mode_r.x = (int)ft_strlen("bck-i-search: ");
+        line->mode_r.x = 0;
         line->mode_r.flag = 1;
     }
 }
@@ -71,12 +77,30 @@ void prompte_mode_r(char c, char **str)
 
 void        print_prompte_(t_line *line, int error)
 {
+	get_posion_mode_r(line);
 	tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
 	tputs(tgetstr("cd", 0), 0, ft_output);
     if (error)
 	    ft_putstr("failing ");
 	ft_putstr("bck-i-search: ");
 	ft_putstr(line->mode_r.s);
+}
+
+void		get_posion_mode_r(t_line *line)
+{
+	t_point point;
+	int		i;
+
+	point = line->c_o;
+	i = line->index;
+	while (i > -1)
+	{
+		point.y += ((line->tabl[i] + line->c_o.x) / line->col);
+		if (((line->tabl[i] + line->c_o.x) % line->col) > 0)
+			point.y += 1;
+		i--;
+	}
+	line->mode_r.y = point.y;
 }
 
 void        search_mode_r(t_line *line, t_node **current)
@@ -94,6 +118,8 @@ void        search_mode_r(t_line *line, t_node **current)
 		while (--k > 0)
 			node = (node)->next;
 		*current = node;
+		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
+		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_history_goto(current, (*current), line);
 		print_prompte_(line, 0);
 	}
