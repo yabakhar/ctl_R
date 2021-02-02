@@ -156,7 +156,7 @@ int					ft_readline_builtines(int flag, char *buff,
 	t_line *line, t_node **current);
 t_node				*add_to_history(const char *str);
 void				prompte_mode_r(char c,char **str);
-void				mode_r(t_line *line);
+void				mode_r(t_line *line,t_node **current);
 void				delet_mode_r(char **str,t_line *line);
 int					get_index_mode_r(t_line *line,int *index);
 void				print_prompte_(t_line *line, int error);
