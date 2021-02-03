@@ -12,51 +12,63 @@
 
 #include "../includes/sh.h"
 
-void ft_affichat(t_line *line,int wahed_variable)
+void ft_affichat(t_line *line,int wahed_variable,int len)
 {
-	int fd = open("/dev/ttys002",O_RDWR);
+        int fd = open("/dev/ttys001",O_RDWR);
 
-	ft_putendl_fd("-----------",fd);
-	ft_putstr_fd("wahed_variable ====>   ",fd);
-	ft_putnbr_fd(wahed_variable,fd);
-	ft_putendl_fd("",fd);
+		ft_putendl_fd("-----------",fd);
+        ft_putstr_fd("len ====>   ",fd);
+        ft_putnbr_fd(len,fd);
+        ft_putendl_fd("",fd);
 
-	ft_putstr_fd("line->c_o.y ====>   ",fd);
-	ft_putnbr_fd(line->c_o.y,fd);
-	ft_putendl_fd("",fd);
+        ft_putstr_fd("wahed_variable ====>   ",fd);
+        ft_putnbr_fd(wahed_variable,fd);
+        ft_putendl_fd("",fd);
+
+        ft_putstr_fd("line->c_o.y ====>   ",fd);
+        ft_putnbr_fd(line->c_o.y,fd);
+        ft_putendl_fd("",fd);
 
 
-	ft_putstr_fd("line->row ====>   ",fd);
-	ft_putnbr_fd(line->row,fd);
-	ft_putendl_fd("",fd);
+        ft_putstr_fd("line->row ====>   ",fd);
+        ft_putnbr_fd(line->row,fd);
+        ft_putendl_fd("",fd);
 
-	ft_putstr_fd("line->mode_r.y ====>   ",fd);
-	ft_putnbr_fd(line->mode_r.y,fd);
-	ft_putendl_fd("",fd);
+		ft_putstr_fd("line->col ====>   ",fd);
+        ft_putnbr_fd(line->col,fd);
+        ft_putendl_fd("",fd);
 
-	int l7sab_jdid  = line->c_o.y - (wahed_variable - line->row);
-	ft_putstr_fd("l7sab_jdid ====>   ",fd);
-	ft_putnbr_fd(l7sab_jdid,fd);
-	ft_putendl_fd("",fd);
-} 	
 
-void	xxxxxxxx(t_line *line,t_node **current)
+		int Y_c_o_jdid  = line->c_o.y - (wahed_variable - line->row);
+        ft_putstr_fd("Y_c_o_jdid ====>   ",fd);
+        ft_putnbr_fd(Y_c_o_jdid,fd);
+        ft_putendl_fd("",fd);
+
+        ft_putstr_fd("line->mode_r.y ====>   ",fd);
+        ft_putnbr_fd(line->mode_r.y,fd);
+        ft_putendl_fd("",fd);
+} 
+
+void	move_cur_v_mode_r(t_line *line,t_node **current, int prompt_len)
 {
 	int len;
 
 	if (line->mode_r.s && *line->mode_r.s)
-		len = ft_strlen(line->mode_r.s)/*+ string dyal prompte*/;
+		len = ft_strlen(line->mode_r.s) + prompt_len;
 	else
-		len = 10;
+		len = prompt_len;
 	int wahed_variable =  (len / line->col);
 	if ((len % line->col) > 0)
 		wahed_variable += 1; 
+	ft_affichat(line, wahed_variable, len);
 	wahed_variable += line->mode_r.y;
-	if (((wahed_variable - line->row) > 0))
+	if ((wahed_variable - line->row) > 0)
 	{
 		line->c_o.y = line->c_o.y - (wahed_variable - line->row);
+		line->mode_r.y = line->mode_r.y - (wahed_variable - line->row);
+		ft_affichat(line, wahed_variable, 99999999);
 		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
-		ft_putstr("\n");
+		ft_putchar('\n');
 		move_cursor_v(line);
 	}
 }
@@ -102,7 +114,7 @@ void mode_r(t_line *line,t_node **current)
         if (line->mode_r.s && *line->mode_r.s)
             ft_strdel(&line->mode_r.s);
         line->mode_r.y = line->c_o.y + count_row(line);
-		xxxxxxxx(line,current);
+		move_cur_v_mode_r(line,current,ft_strlen("bck-i-search: "));
 		tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
 		move_cursor_v(line);
         prompte_mode_r(0,&line->mode_r.s);
@@ -133,6 +145,7 @@ void        print_prompte_(t_line *line, int error)
 	    ft_putstr("failing ");
 	ft_putstr("bck-i-search: ");
 	ft_putstr(line->mode_r.s);
+	ft_putchar(' ');
 }
 
 void        search_mode_r(t_line *line, t_node **current)
@@ -153,12 +166,13 @@ void        search_mode_r(t_line *line, t_node **current)
 		tputs(tgoto(tgetstr("cm", 0), line->c_o.x, line->c_o.y), 0, ft_output);
 		tputs(tgetstr("cd", 0), 0, ft_output);
 		ft_history_goto(current, (*current), line);
-		xxxxxxxx(line,current);
+		line->mode_r.y = line->c_o.y + count_row(line);
+		move_cur_v_mode_r(line,current,ft_strlen("bck-i-search: "));
 		print_prompte_(line, 0);
 	}
 	else
 	{
-		xxxxxxxx(line,current);
+		move_cur_v_mode_r(line,current,ft_strlen("failing ") + ft_strlen("bck-i-search: "));
 		print_prompte_(line, 1);
 	}
 }

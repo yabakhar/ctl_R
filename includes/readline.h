@@ -70,6 +70,7 @@ typedef struct		s_mode_r
 	char			tmp;
 	int 			x;
 	int 			y;
+	int				count;
 }					t_mode_r;
 
 typedef struct		s_line
