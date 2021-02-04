@@ -146,7 +146,6 @@ void				free_history_node(t_node *node);
 void				ft_unset_terminal(void);
 void				ft_put_multistring(char **strings);
 void				ft_free_history(void);
-void				ft_free_history(void);
 void				ft_signale(void);
 void				ft_ctl_l(t_line *line, char *str);
 void				ft_ctl_d(int flag);
@@ -157,12 +156,11 @@ int					ft_readline_builtines(int flag, char *buff,
 	t_line *line, t_node **current);
 t_node				*add_to_history(const char *str);
 void				prompte_mode_r(char c,char **str);
-void				mode_r(t_line *line,t_node **current);
+void				mode_r(t_line *line);
 void				delet_mode_r(char **str,t_line *line);
 int					get_index_mode_r(t_line *line,int *index);
 void				print_prompte_(t_line *line, int error);
 void				search_mode_r(t_line *line, t_node **current);
-void				get_posion_mode_r(t_line *line);
 void				ft_disable_mode_r(t_line *line);
 #endif
 // ft_putendl_fd((*current)->tmp,open("/dev/ttys003",O_RDWR));

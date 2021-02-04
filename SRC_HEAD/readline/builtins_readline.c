@@ -70,7 +70,7 @@ int		keyshendle1(t_line *line, char **str, t_node **current)
 	else if (line->r == PAGE_UP && (r = 1))
 		move_up(line);
 	else if (line->r == 18 && !line->mode_r.flag && (r = 1))
-		mode_r(line, current);
+		mode_r(line);
 	return (r);
 }
 
