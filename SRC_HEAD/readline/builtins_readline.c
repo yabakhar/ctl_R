@@ -23,7 +23,6 @@ void	ft_print_print(char **str, t_line *line, char *buff)
 	ft_clear(line, *str);
 }
 
-//3 valid 
 int keyshandle3(t_line *line, char **str)
 {
 	int r;
@@ -33,11 +32,14 @@ int keyshandle3(t_line *line, char **str)
 		ft_delet(str, line);
 	else if (line->r == DEL && line->mode_r.flag && (r = 1))
 		delet_mode_r(&line->mode_r.s,line);
+	else if (line->r == TAB && !line->mode_r.flag && (r = 1))
+	{
+		ft_auto_complition(line,str);
+	}
 	return(r);
 }
 
 
-//2 valide
 int		keyshendle2(t_line *line, char **str, int flag)
 {
 	int	r;
@@ -69,7 +71,7 @@ int		keyshendle1(t_line *line, char **str, t_node **current)
 		move_down(line);
 	else if (line->r == PAGE_UP && (r = 1))
 		move_up(line);
-	else if (line->r == 18 && !line->mode_r.flag && (r = 1))
+	else if (line->r == CTRL_R && !line->mode_r.flag && (r = 1))
 		mode_r(line);
 	return (r);
 }
@@ -114,7 +116,7 @@ int		ft_readline_builtines(int flag, char *buff, t_line *line, t_node **current)
 		ft_print_print(&(*current)->tmp, line, buff);
 		return (1);
 	}
-	else if (line->slct == 0 && line->mode_r.flag && 18 != line->r)
+	else if (line->slct == 0 && line->mode_r.flag && CTRL_R != line->r)
 	{
 		search_mode_r(line, current);
 		return(1);
