@@ -48,6 +48,8 @@
 # define CTRL_R		18
 # define TAB		9
 
+#define EQUAL 0
+#define NOT_EQUAL 1
 
 typedef struct		s_node
 {
@@ -67,6 +69,7 @@ typedef struct		s_point
 
 typedef struct		s_cmplt
 {
+	int				prefix_pos;
 	int				type;
 	char			*str;
 }					t_cmplt;

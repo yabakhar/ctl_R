@@ -12,103 +12,78 @@
 
 #include "../includes/sh.h"
 
-
-
-
-
-// void	xxxx(char *str,int c_len)
-// { /*
-// 	// int j = c_len;
-
-// 	// while (str[j] && j > 0)
-// 	// {
-// 	// 	if (!ft_isalpha(str[j]))
-// 	// 		break;
-// 	// 	j--;
-// 	// }
-// 	// int i = j;
-// 	// str[j] == ' ' ? j++ : j;
-// 	// char *s = ft_strsub(str,j,c_len - j);
-// 	// hadchi m7tajo
-// 	*/
-// 	// ft_putnbr_fd(xxxxc(c_len,str),open("/dev/ttys001",O_RDWR));
-// }
-
-int ft_ispace(int index,char *str)
+int is_in_str(char c, const char *cmp)
 {
-	int flag = 0;
-	while (str[index])
+	while(*cmp)
 	{
-		if (str[index] == ' ' && flag)
-			flag = 2;
-		else if (ft_isalnum(str[index]) && !flag)
-			flag = 1;
-		else if (!ft_isalnum(str[index]) && str[index] != ' ')
-			return (0);
-		if (ft_isalnum(str[index]) && flag == 2)
-			return (1);
-		index--;
+		if(*cmp  == c)
+			return(1);
+		cmp++;
 	}
-	return (0);
+	return(0);
 }
 
-int	ft_tab_checker(int index,char *str)
+char	*ft_strrsearch(char *s, const char *cmp, size_t size)
 {
-	int flag = 0;
-	while(str[index])
+	while (size > 0)
 	{
-		if (ft_isalnum(str[index]) && flag)
-			return (1);
-		else if (str[index] == ' ' && !flag)
-			flag = 1;
-		else if (ft_strchr("&|;",str[index]))
-			return(0);
-		index--;
+		if (is_in_str(s[size], cmp))
+			return (s + size);
+		size--;
 	}
-	return (0);	
+	return (s + size);
 }
 
-int ft_ciparateur(int index,char *str)
+char	*ft_strrsearch2(char *s, const char *cmp, size_t size)
 {
-	int flag = 0;
-	while (str[index])
+	while (size > 0)
 	{
-		if (ft_strchr("&|;",str[index]) && flag)
-			return (0);
-		else if (str[index] == ' ' && !flag)
-			flag = 1;
-		else if (ft_isalnum(str[index]))
-			return (1);
-		index--;
+		if (!is_in_str(s[size], cmp))
+			return (s + size);
+		size--;
 	}
-	return (0);
+	return (s + size);
+}
+
+
+void	get_str_for_search(char *str,t_line *line, int cursor_pos)
+{
+	int tmp;
+	int len;
+	int debut;
+
+	tmp = line->compl.prefix_pos;
+	len = cursor_pos - tmp;
+	debut = (tmp > 0) ? tmp : tmp++;
+	line->compl.str = ft_strsub(str,debut,len);
 }
 
 void  ft_parce_complition(t_line *line, char **str)
 {
-	int r = 0;
-	if ((*str)[line->c_len] == 0)
+	int		cursor_pos;
+	char	*lastchar;
+	char	*prefix ;
+	
+	cursor_pos = line->c_len - (1 * (line->c_len > 0));
+	prefix = ft_strrsearch(*str, " ;&$|", cursor_pos);
+	line->compl.prefix_pos = prefix - (*str);
+	get_str_for_search(*str,line, line->c_len);
+	if (*prefix == '$')
+		line->compl.type = 0;
+	else
 	{
-		ft_putnbr_fd(820,open("/dev/ttys002",O_RDWR));
-	}
-	else if (ft_isalnum((*str)[line->c_len]))
-	{
-		ft_putnbr_fd(ft_tab_checker(line->c_len,*str),open("/dev/ttys002",O_RDWR));
-	}
-	else if ((*str)[line->c_len] == ' ')
-	{
-		ft_putnbr_fd(ft_ispace(line->c_len,*str),open("/dev/ttys002",O_RDWR));
-	}
-	else if (ft_strchr("&|;",(*str)[line->c_len]))
-	{
-		ft_putnbr_fd(ft_ciparateur(line->c_len,*str),open("/dev/ttys002",O_RDWR));
+		lastchar = ft_strrsearch2(*str, " ", line->compl.prefix_pos);
+		if(is_in_str(*lastchar, " &|;") || lastchar == str[0])
+			line->compl.type = 2;
+		else
+			line->compl.type = 1;
 	}
 }
 
 void ft_auto_complition(t_line *line, char **str)
 {
 	ft_parce_complition(line, str);
+	ft_putendl_fd(line->compl.str,open("/dev/ttys002",O_RDWR));
+	ft_putnbr_fd(line->compl.type,open("/dev/ttys002",O_RDWR));
+	ft_putendl_fd("   ->type",open("/dev/ttys002",O_RDWR));
 }
-
-
-// if (ft_isalnum())
