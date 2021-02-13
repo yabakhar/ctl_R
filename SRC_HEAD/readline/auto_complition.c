@@ -69,21 +69,45 @@ void  ft_parce_complition(t_line *line, char **str)
 	line->compl.prefix_pos = prefix - (*str);
 	get_str_for_search(*str,line, line->c_len);
 	if (*prefix == '$')
-		line->compl.type = 0;
+		line->compl.type = 1;
 	else
 	{
 		lastchar = ft_strrsearch2(*str, " ", line->compl.prefix_pos);
 		if(is_in_str(*lastchar, " &|;") || lastchar == str[0])
-			line->compl.type = 2;
+			line->compl.type = 0;
 		else
-			line->compl.type = 1;
+			line->compl.type = 2;
 	}
 }
 
 void ft_auto_complition(t_line *line, char **str)
 {
+
+	if (line->compl.str && *line->compl.str)
+		ft_strdel(&(line->compl.str));
 	ft_parce_complition(line, str);
-	ft_putendl_fd(line->compl.str,open("/dev/ttys002",O_RDWR));
-	ft_putnbr_fd(line->compl.type,open("/dev/ttys002",O_RDWR));
-	ft_putendl_fd("   ->type",open("/dev/ttys002",O_RDWR));
+	char * tmp = ft_strdup(line->compl.str);
+	ft_strdel(&line->compl.str);
+	line->compl.str = ft_strtrim(tmp);
+	if (!line->compl.type)
+	{
+		if (!ft_strlen(line->compl.str) || ft_strlen(line->compl.str) == 1)
+			ft_putendl_fd("NULL commande",open("/dev/ttys001",O_RDWR));
+		else
+			ft_putendl_fd(line->compl.str,open("/dev/ttys001",O_RDWR));
+	}
+	else if (line->compl.type == 1)
+	{
+		if (!ft_strlen(line->compl.str) || ft_strlen(line->compl.str) == 1)
+			ft_putendl_fd("NULL parameter",open("/dev/ttys001",O_RDWR));
+		else
+			ft_putendl_fd(line->compl.str,open("/dev/ttys001",O_RDWR));
+	}
+	else if (line->compl.type == 2)
+	{
+		if (!ft_strlen(line->compl.str))
+			ft_putendl_fd("NULL file ",open("/dev/ttys001",O_RDWR));
+		else
+			ft_putendl_fd(line->compl.str,open("/dev/ttys001",O_RDWR));
+	}
 }
