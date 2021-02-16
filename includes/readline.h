@@ -67,11 +67,21 @@ typedef struct		s_point
 	int				y;
 }					t_point;
 
+
+typedef struct		s_affcmpl
+{
+	char			*content;
+	struct s_affcmpl *next;
+}					t_affcmpl;
+
 typedef struct		s_cmplt
 {
 	int				prefix_pos;
+	int				len;
 	int				type;
+	char			*path;
 	char			*str;
+	char			*search;
 }					t_cmplt;
 
 typedef struct		s_mode_r
@@ -175,6 +185,6 @@ int					get_index_mode_r(t_line *line,int *index);
 void				print_prompte_(t_line *line, int error);
 void				search_mode_r(t_line *line, t_node **current);
 void				ft_disable_mode_r(t_line *line);
-void				ft_auto_complition(t_line *line, char **str);
+void				ft_auto_completion(t_line *line, char **str);
 #endif
 // ft_putendl_fd((*current)->tmp,open("/dev/ttys003",O_RDWR));

@@ -34,7 +34,7 @@ int keyshandle3(t_line *line, char **str)
 		delet_mode_r(&line->mode_r.s,line);
 	else if (line->r == TAB && !line->mode_r.flag && (r = 1))
 	{
-		ft_auto_complition(line,str);
+		ft_auto_completion(line,str);
 	}
 	return(r);
 }
