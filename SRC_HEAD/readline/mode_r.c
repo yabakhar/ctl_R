@@ -148,6 +148,8 @@ void		delet_mode_r(char **str, t_line *line)
 	int		len;
 
 	len = ft_strlen(*str);
+	if (!len)
+		return;
 	tmp = ft_strsub(*str, 0, len - 1);
 	ft_strdel(str);
 	*str = ft_strdup(tmp);

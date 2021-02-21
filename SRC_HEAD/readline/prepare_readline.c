@@ -60,7 +60,7 @@ void	ft_set_terminal(void)
 {
 	struct termios	config;
 	char			buf[1024];
-
+	
 	if (tcgetattr(0, &config) < 0)
 		ft_putendl_fd("error", 2);
 	config.c_lflag &= ~(ECHO | ICANON);

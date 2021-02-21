@@ -82,6 +82,7 @@ typedef struct		s_cmplt
 	char			*path;
 	char			*str;
 	char			*search;
+	int				count;
 }					t_cmplt;
 
 typedef struct		s_mode_r
