@@ -62,9 +62,9 @@ typedef enum	e_split{
 	Returnagg
 }				t_split;
 
-size_t			g_agg_len;
-char			*g_tty_name;
-int				g_ex_flag;
+/*extern */size_t			g_agg_len;
+/*extern */char			*g_tty_name;
+/*extern */int				g_ex_flag;
 
 typedef struct			s_mypipe
 {
@@ -124,8 +124,8 @@ typedef struct			s_his
 	struct s_his		*next;
 }						t_his;
 
-t_his			*g_his;
-int				g_alltokenzsize;
+/*extern */t_his			*g_his;
+/*extern */int				g_alltokenzsize;
 
 typedef struct			s_redir
 {

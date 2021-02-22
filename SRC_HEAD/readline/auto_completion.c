@@ -108,8 +108,6 @@ int			get_blen(t_affcmpl *head)
 	return (blen);
 }
 
-
-
 void ft_putnchar(char c, int n)
 {
 	while(n)
@@ -130,6 +128,8 @@ void afficher_file(t_affcmpl *head, t_line *line)
 	int d = 0;
 	blen = get_blen(head);
 	int k = w.ws_col / (blen + 1);
+	if (k == 0)
+		k++;
 	ft_putchar('\n');
 	while (head->next)
 	{
@@ -137,21 +137,39 @@ void afficher_file(t_affcmpl *head, t_line *line)
 		ft_putstr(head->content);
 		head = head->next;
 		d++;
-		if(d % k == 0)
+		if (d % k == 0)
 		{
 			col = 0;
-			row += 1;
-			ft_putchar('\n');
-			col -= blen + 1;
+			if (head->next)
+			{
+				ft_putchar('\n');
+				row += 1;
+			}
 		}
-		col += blen + 1;
+		else
+			col += blen + 1;
 	}
 	ft_putchar('\n');
-	line->c_o.y += row;
+	line->c_o.y = row + 1;
 	ft_d(line);
 }
+void completion_str(t_affcmpl *head, t_line *line,char **str)
+{
+	int plus_len = ft_strlen(head->content) - line->compl.len;
+	char *third_str = ft_strsub(*str,line->cursor,line->b_line -line->cursor);
+	char *second_str = ft_strsub(*str,0,line->cursor - line->compl.len);
+	char *tmp = ft_freejoin(second_str,head->content,0);
+	ft_strdel(str);
+	*str = ft_freejoin(tmp,third_str,2);
+	line->b_line += plus_len;
+	line->len += plus_len;
+	line->cursor += plus_len;
+	ft_multilne(*str, line);
+	line->c_len += plus_len;
+	ft_clear(line, *str);
+}
 
-void stock_path_file(char *str,int flag,t_line *line)
+t_affcmpl *stock_path_file(char *str,int flag,t_line *line)
 {
 	DIR *dir;
 	struct dirent *dent;
@@ -175,8 +193,7 @@ void stock_path_file(char *str,int flag,t_line *line)
 		}
 		closedir(dir);
 	}
-	if (line->compl.count > 1)
-		afficher_file(affcmpltmp,line);
+	return(affcmpltmp);
 }
 
 void make_path_file(t_line *line)
@@ -193,7 +210,7 @@ void make_path_file(t_line *line)
 	}
 }
 
-void make_path_completion(t_line *line)
+void make_path_completion(t_line *line,char **str)
 {
 	
 	if (!line->compl.type)
@@ -213,12 +230,16 @@ void make_path_completion(t_line *line)
 	// }
 	if (line->compl.type == 2)
 	{
+		t_affcmpl *affcmpltmp;
+		int flag;
 		make_path_file(line);
 		line->compl.len = ft_strlen(line->compl.search);
-		if (!line->compl.len)
-			stock_path_file(line->compl.path,0,line);
-		else
-			stock_path_file(line->compl.path,1,line);
+		flag = (!line->compl.len) ? 0: 1;
+		affcmpltmp = stock_path_file(line->compl.path,flag,line);
+		if (line->compl.count > 1)
+			afficher_file(affcmpltmp,line);
+		else if (line->compl.count == 1)
+			completion_str(affcmpltmp,line,str);
 	}
 }
 
@@ -236,5 +257,5 @@ void ft_auto_completion(t_line *line, char **str)
 	ft_strdel(&line->compl.str);
 	line->compl.str = ft_strtrim(tmp);
 	ft_strdel(&(tmp));
-	make_path_completion(line);
+	make_path_completion(line,str);
 }

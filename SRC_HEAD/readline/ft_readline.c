@@ -12,6 +12,9 @@
 
 #include "../includes/sh.h"
 
+char	*g_str;
+t_line	*g_line;
+
 int			ft_output(int str)
 {
 	ft_putchar(str);

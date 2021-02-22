@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-// #include <stdio.h>
 
 void opt_error(char c)
 {

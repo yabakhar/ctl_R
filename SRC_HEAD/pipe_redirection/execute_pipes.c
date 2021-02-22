@@ -12,6 +12,9 @@
 
 #include "sh.h"
 
+t_his			*g_his;
+char			*g_tty_name;
+
 static void		execute_pipes2(t_miniast *tree, t_mypipe *pipes)
 {
 	close(pipes->pipe[0]);
