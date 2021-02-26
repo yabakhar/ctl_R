@@ -16,6 +16,8 @@ void ft_get_all_bin_files(char *str,t_line *line,int flag,t_affcmpl **affcmpl)
 {
 	DIR *dir;
 	struct dirent *dent;
+	
+	
 	if ((dir = opendir(str)))
 	{
 		while((dent=readdir(dir))!=NULL)
@@ -27,19 +29,21 @@ void ft_get_all_bin_files(char *str,t_line *line,int flag,t_affcmpl **affcmpl)
 					(*affcmpl)->content = ft_strdup(dent->d_name);
 					(*affcmpl)->next = ft_memalloc(sizeof(t_affcmpl));
 					(*affcmpl) = (*affcmpl)->next;
+					line->compl.count++;
 				}
 			}
 		}
 		closedir(dir);
 	}
 }
-void ft_get_all_bin_dirs(t_line *line)
+void ft_get_all_bin_dirs(t_line *line,char **str)
 {
 	int i = 0;
 	char **dirs;
 	t_affcmpl *affcmpl = ft_memalloc(sizeof(t_affcmpl));
 	t_affcmpl *affcmpltmp = affcmpl;
 	int flag = 0;
+	line->compl.count = 0;
 	// if (!(v.env_path_value = get_value_expansion("PATH", env)))
 	// 	return (NULL);
 	if (!(dirs = ft_strsplit("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki", ':')))
@@ -48,14 +52,17 @@ void ft_get_all_bin_dirs(t_line *line)
 	flag = (!line->compl.len) ? 0: 1;
 	if (line->compl.path && *line->compl.path)
 	{
-		ft_putendl_fd(line->compl.path,open("/dev/ttys001",O_RDWR));
-		ft_putendl_fd(line->compl.search,open("/dev/ttys001",O_RDWR));
+		// ft_putendl_fd(line->compl.path,open("/dev/ttys001",O_RDWR));
+		// ft_putendl_fd(line->compl.search,open("/dev/ttys001",O_RDWR));
 		ft_get_all_bin_files(line->compl.path,line,flag,&affcmpltmp);
 	}
 	else
 		while (dirs[i])
 			ft_get_all_bin_files(dirs[i++],line,flag,&affcmpltmp);
-	afficher_file(affcmpl,line);
+	if (line->compl.count > 1)
+		afficher_file(affcmpl, line);
+	else if (line->compl.count == 1)
+		completion_str(affcmpl, line, str);
 	while (affcmpl)
 	{
 		ft_strdel(&affcmpl->content);
@@ -211,7 +218,7 @@ void completion_str(t_affcmpl *head, t_line *line,char **str)
 	char *second_str = ft_strsub(*str,0,line->cursor - line->compl.len);
 	char *tmp = ft_freejoin(second_str,head->content,0);
 	ft_strdel(str);
-	*str = ft_freejoin(tmp,third_str,2);
+	*str = ft_freejoin(tmp, third_str, 2);
 	line->b_line += plus_len;
 	line->len += plus_len;
 	line->cursor += plus_len;
@@ -267,7 +274,7 @@ void make_path_completion(t_line *line,char **str)
 	if (!line->compl.type)
 	{
 		make_path_file(line,1);
-		ft_get_all_bin_dirs(line);
+		ft_get_all_bin_dirs(line,str);
 		// if (!line->compl.len || line->compl.len == 1)
 		// 	ddd("/dev",0,line);
 		// else

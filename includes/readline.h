@@ -189,5 +189,6 @@ void				ft_disable_mode_r(t_line *line);
 void				ft_auto_completion(t_line *line, char **str);
 void afficher_file(t_affcmpl *head, t_line *line);
 void	ft_d(t_line *line);
+void completion_str(t_affcmpl *head, t_line *line,char **str);
 #endif
 // ft_putendl_fd((*current)->tmp,open("/dev/ttys003",O_RDWR));
