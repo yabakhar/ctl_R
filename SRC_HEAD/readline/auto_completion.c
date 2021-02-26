@@ -12,6 +12,57 @@
 
 #include "../includes/sh.h"
 
+void ft_get_all_bin_files(char *str,t_line *line,int flag,t_affcmpl **affcmpl)
+{
+	DIR *dir;
+	struct dirent *dent;
+	if ((dir = opendir(str)))
+	{
+		while((dent=readdir(dir))!=NULL)
+		{
+			if ((flag && !ft_strncmp(line->compl.search,dent->d_name,line->compl.len)) || !flag)
+			{
+				if (!ft_strequ(dent->d_name,".") && !ft_strequ(dent->d_name,".."))
+				{
+					(*affcmpl)->content = ft_strdup(dent->d_name);
+					(*affcmpl)->next = ft_memalloc(sizeof(t_affcmpl));
+					(*affcmpl) = (*affcmpl)->next;
+				}
+			}
+		}
+		closedir(dir);
+	}
+}
+void ft_get_all_bin_dirs(t_line *line)
+{
+	int i = 0;
+	char **dirs;
+	t_affcmpl *affcmpl = ft_memalloc(sizeof(t_affcmpl));
+	t_affcmpl *affcmpltmp = affcmpl;
+	int flag = 0;
+	// if (!(v.env_path_value = get_value_expansion("PATH", env)))
+	// 	return (NULL);
+	if (!(dirs = ft_strsplit("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki", ':')))
+		return ;
+	line->compl.len = ft_strlen(line->compl.search);
+	flag = (!line->compl.len) ? 0: 1;
+	if (line->compl.path && *line->compl.path)
+	{
+		ft_putendl_fd(line->compl.path,open("/dev/ttys001",O_RDWR));
+		ft_putendl_fd(line->compl.search,open("/dev/ttys001",O_RDWR));
+		ft_get_all_bin_files(line->compl.path,line,flag,&affcmpltmp);
+	}
+	else
+		while (dirs[i])
+			ft_get_all_bin_files(dirs[i++],line,flag,&affcmpltmp);
+	afficher_file(affcmpl,line);
+	while (affcmpl)
+	{
+		ft_strdel(&affcmpl->content);
+		affcmpl = affcmpl->next;
+	}
+}
+
 void	ft_d(t_line *line)
 {
 	tputs(tgoto(tgetstr("cm", 0), 0, line->c_o.y), 0, ft_output);
@@ -169,15 +220,11 @@ void completion_str(t_affcmpl *head, t_line *line,char **str)
 	ft_clear(line, *str);
 }
 
-t_affcmpl *stock_path_file(char *str,int flag,t_line *line)
+void stock_path_file(char *str,int flag,t_line *line,t_affcmpl **affcmpl)
 {
 	DIR *dir;
 	struct dirent *dent;
-	t_affcmpl *affcmpl;
-	t_affcmpl *affcmpltmp;
 
-	affcmpl = ft_memalloc(sizeof(t_affcmpl));
-	affcmpltmp = affcmpl;
 	line->compl.count = 0;
 	if ((dir = opendir(str)))
 	{
@@ -185,23 +232,27 @@ t_affcmpl *stock_path_file(char *str,int flag,t_line *line)
 		{
 			if ((flag && !ft_strncmp(line->compl.search,dent->d_name,line->compl.len))|| !flag)
 			{
-				affcmpl->content = ft_strdup(dent->d_name);
-				affcmpl->next = ft_memalloc(sizeof(t_affcmpl));
-				affcmpl = affcmpl->next;
+				(*affcmpl)->content = ft_strdup(dent->d_name);
+				(*affcmpl)->next = ft_memalloc(sizeof(t_affcmpl));
+				(*affcmpl) = (*affcmpl)->next;
 				line->compl.count++;
 			}
 		}
 		closedir(dir);
 	}
-	return(affcmpltmp);
 }
 
-void make_path_file(t_line *line)
+void make_path_file(t_line *line,int command)
 {
 	if (ft_strchr(line->compl.str,'/'))
 	{
 		line->compl.search = ft_strdup(ft_strrchr(line->compl.str, '/') + 1);
 		line->compl.path = ft_strsub(line->compl.str, 0, ft_strlen(line->compl.str) - ft_strlen(line->compl.search));
+	}
+	else if (!ft_strchr(line->compl.str,'/') && command)
+	{
+		line->compl.path = NULL;
+		line->compl.search = ft_strdup(line->compl.str);
 	}
 	else if (!ft_strchr(line->compl.str,'/'))
 	{
@@ -215,6 +266,8 @@ void make_path_completion(t_line *line,char **str)
 	
 	if (!line->compl.type)
 	{
+		make_path_file(line,1);
+		ft_get_all_bin_dirs(line);
 		// if (!line->compl.len || line->compl.len == 1)
 		// 	ddd("/dev",0,line);
 		// else
@@ -224,22 +277,23 @@ void make_path_completion(t_line *line,char **str)
 	// else if (line->compl.type == 1)
 	// {
 	// 	if (line->compl.len == 1)
-	// 		ft_putendl_fd(line->compl.str,open("/dev/ttys002",O_RDWR));//NULL parameter
+	// 		ft_putendl_fd(line->compl.str,open("/dev/ttys001",O_RDWR));//NULL parameter
 	// 	else
-	// 		ft_putendl_fd(line->compl.str,open("/dev/ttys002",O_RDWR));
+	// 		ft_putendl_fd(line->compl.str,open("/dev/ttys001",O_RDWR));
 	// }
 	if (line->compl.type == 2)
 	{
-		t_affcmpl *affcmpltmp;
+		t_affcmpl *affcmpl = ft_memalloc(sizeof(t_affcmpl));
+		t_affcmpl *affcmpltmp = affcmpl;
 		int flag;
-		make_path_file(line);
+		make_path_file(line,0);
 		line->compl.len = ft_strlen(line->compl.search);
 		flag = (!line->compl.len) ? 0: 1;
-		affcmpltmp = stock_path_file(line->compl.path,flag,line);
+		stock_path_file(line->compl.path,flag,line,&affcmpltmp);
 		if (line->compl.count > 1)
-			afficher_file(affcmpltmp,line);
+			afficher_file(affcmpl,line);
 		else if (line->compl.count == 1)
-			completion_str(affcmpltmp,line,str);
+			completion_str(affcmpl,line,str);
 	}
 }
 
