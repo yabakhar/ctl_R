@@ -16,8 +16,7 @@ void ft_get_all_bin_files(char *str,t_line *line,int flag,t_affcmpl **affcmpl)
 {
 	DIR *dir;
 	struct dirent *dent;
-	
-	
+
 	if ((dir = opendir(str)))
 	{
 		while((dent=readdir(dir))!=NULL)
@@ -49,13 +48,9 @@ void ft_get_all_bin_dirs(t_line *line,char **str)
 	if (!(dirs = ft_strsplit("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki", ':')))
 		return ;
 	line->compl.len = ft_strlen(line->compl.search);
-	flag = (!line->compl.len) ? 0: 1;
+	flag = (!line->compl.len) ? 0 : 1;
 	if (line->compl.path && *line->compl.path)
-	{
-		// ft_putendl_fd(line->compl.path,open("/dev/ttys001",O_RDWR));
-		// ft_putendl_fd(line->compl.search,open("/dev/ttys001",O_RDWR));
 		ft_get_all_bin_files(line->compl.path,line,flag,&affcmpltmp);
-	}
 	else
 		while (dirs[i])
 			ft_get_all_bin_files(dirs[i++],line,flag,&affcmpltmp);
@@ -259,7 +254,13 @@ void make_path_file(t_line *line,int command)
 	else if (!ft_strchr(line->compl.str,'/') && command)
 	{
 		line->compl.path = NULL;
-		line->compl.search = ft_strdup(line->compl.str);
+		if (ft_strlen(line->compl.str))
+		{
+			if (!ft_strchr("|&;",line->compl.str[0]))
+				line->compl.search = ft_strdup(line->compl.str);
+			else if (ft_strchr("|&;",line->compl.str[0]))
+				line->compl.search = ft_strdup(line->compl.str + 1);
+		}
 	}
 	else if (!ft_strchr(line->compl.str,'/'))
 	{
@@ -275,11 +276,6 @@ void make_path_completion(t_line *line,char **str)
 	{
 		make_path_file(line,1);
 		ft_get_all_bin_dirs(line,str);
-		// if (!line->compl.len || line->compl.len == 1)
-		// 	ddd("/dev",0,line);
-		// else
-		// 	ddd("/dev",1,line);
-			/* PATH : /some Character */
 	}
 	// else if (line->compl.type == 1)
 	// {

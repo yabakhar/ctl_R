@@ -192,3 +192,9 @@ void	ft_d(t_line *line);
 void completion_str(t_affcmpl *head, t_line *line,char **str);
 #endif
 // ft_putendl_fd((*current)->tmp,open("/dev/ttys003",O_RDWR));
+
+
+	// if (!ft_strchr("|&;",line->compl.str[0]))
+	// 	line->compl.search = ft_strdup(line->compl.str);
+	// else if (!ft_strchr("|&;",line->compl.str[0]))
+	// 	line->compl.search = ft_strdup(line->compl.str + 1);
