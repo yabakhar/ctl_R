@@ -274,8 +274,10 @@ void make_path_completion(t_line *line,char **str)
 	
 	if (!line->compl.type)
 	{
-		make_path_file(line,1);
-		ft_get_all_bin_dirs(line,str);
+		ft_putendl_fd(line->compl.str,open("/dev/ttys002",O_RDWR));
+		// make_path_file(line,1);
+		// ft_get_all_bin_dirs(line,str);
+
 	}
 	// else if (line->compl.type == 1)
 	// {
