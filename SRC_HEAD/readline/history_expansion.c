@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/sh.h"
 
 char *get_node(char *str)
 {
-    t_history *history;
-    history = get_head_history();
+    t_node *history;
+    history = add_to_history(NULL);
     int nuber = ft_atoi(str);
     int calc = calc_list(history);
     if (nuber < 0)

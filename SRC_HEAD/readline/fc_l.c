@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../includes/sh.h"
 
 int ft_abs(int num)
 {
     return (num = (num >= 0) ? num : (num * -1));
 }
 
-void get_index_in_list(t_history **history,int debut)
+void get_index_in_list(t_node **history,int debut)
 {
 	int i = 0;
 	while (*history)
@@ -33,10 +33,10 @@ void get_index_in_list(t_history **history,int debut)
 char *get_content_in_list(int debut)
 {
 	int i;
-    t_history *history;
+    t_node *history;
 
     i = 0;
-    history = get_head_history();
+    history = add_to_history(NULL);
 	while (history)
 	{
 		if (i == debut)
@@ -46,7 +46,8 @@ char *get_content_in_list(int debut)
 	}
 	return(NULL);
 }
-int calc_list(t_history *history)
+
+int calc_list(t_node *history)
 {
 	int i = 0;
 	while (history)
@@ -121,22 +122,25 @@ int ft_get_debut_fin_l(t_opt *opt,char **hold)
         opt->debut = -16;
         opt->fin = 0;
     }
-	ft_get_debut_fin(opt,hold);
+    else
+    {
+	    if (!ft_get_debut_fin(opt,hold))
+            return (0);
+    }
     ft_calc_debut_fin(opt);
     return(1);
 }
 
 void ft_calc_range_of_debut_fin(t_opt *opt,int *size,char ***result)
 {
-    t_history *history;
+    t_node *history;
     int i;
 
     i = 0;
-    history = get_head_history();
-    
+    history = add_to_history(NULL);
     *size = opt->debut - opt->fin;
     *size += (((*size > 0) ? 1 : -1) * (opt->count >= 0));
-    get_index_in_list(&history,opt->debut); 
+    get_index_in_list(&history,opt->debut);
     (*result) = ft_memalloc(sizeof(char *) * (ft_abs(*size) + 1));
     while(1)
     {
@@ -144,7 +148,7 @@ void ft_calc_range_of_debut_fin(t_opt *opt,int *size,char ***result)
         history = (*size > 0) ? history->prev : history->next;
         i += (*size > 0) ? 1 : -1;
         if (!history || i == *size)
-            break;
+            break ;
     }
 }
 
@@ -153,9 +157,11 @@ int fc_l(t_opt *opt,char **hold)
     char **result;
     int size;
 
-    ft_get_debut_fin_l(opt,hold);
-    ft_calc_range_of_debut_fin(opt,&size,&result);
-    ft_affiche_tab_l(result,ft_abs(size),opt,ft_sin(size));
-    free(result);
+    if (ft_get_debut_fin_l(opt,hold))
+    {
+        ft_calc_range_of_debut_fin(opt,&size,&result);
+        ft_affiche_tab_l(result,ft_abs(size),opt,ft_sin(size));
+        free(result);
+    }
     return (0);
 }

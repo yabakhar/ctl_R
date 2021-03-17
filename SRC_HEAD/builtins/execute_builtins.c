@@ -80,6 +80,8 @@ void			execute_blt_with_fork(char **cmd, char **tabs, t_env **env_list)
 			blt_echo(cmd);
 		else if (ft_strequ(cmd[0], "env"))
 			print_env_list(env_list);
+		else if (ft_strequ(cmd[0], "fc"))
+			parce_param_fc(cmd);
 		else if (ft_strequ(cmd[0], "type"))
 			type_builtin(cmd, env_list);
 		else if (ft_strequ(cmd[0], "cd"))
@@ -89,7 +91,10 @@ void			execute_blt_with_fork(char **cmd, char **tabs, t_env **env_list)
 		else if (ft_strequ(cmd[0], "unsetenv"))
 			blt_unsetenv(cmd, env_list);
 		else if (ft_strequ(cmd[0], "exit"))
+		{
+			print_in_history(PATH_HISTORY_FILE);
 			exit(0);
+		}
 	}
 	return ;
 }

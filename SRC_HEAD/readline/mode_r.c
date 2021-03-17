@@ -12,10 +12,31 @@
 
 #include "../includes/sh.h"
 
-void		update_cur_mode_r(t_line *line, int prompt_len)
+void load_hsitory(const char *file)
 {
-	int		len;
-	int		wahed_variable;
+	char *line;
+	int num;
+	int fd;
+
+	num = 0;
+	line = NULL;
+	if ((fd = open(file, O_RDWR | O_CREAT, 00600)) == -1)
+		return ;
+	while (get_next_line(fd, &line) > 0)
+	{
+		add_to_history(line);
+		ft_strdel(&line);
+		num++;
+	}
+	ft_strdel(&line);
+	close(fd);
+	g_lohtory = 1;
+}
+
+void update_cur_mode_r(t_line *line, int prompt_len)
+{
+	int len;
+	int wahed_variable;
 
 	len = 0;
 	if (line->mode_r.s && *line->mode_r.s)
@@ -36,7 +57,7 @@ void		update_cur_mode_r(t_line *line, int prompt_len)
 	}
 }
 
-void		ft_disable_mode_r(t_line *line)
+void ft_disable_mode_r(t_line *line)
 {
 	if (line->mode_r.flag)
 	{
@@ -49,10 +70,10 @@ void		ft_disable_mode_r(t_line *line)
 	}
 }
 
-int			get_index_mode_r(t_line *line, int *index)
+int get_index_mode_r(t_line *line, int *index)
 {
-	t_node	*node;
-	int		i;
+	t_node *node;
+	int i;
 
 	i = 0;
 	*index = 0;
@@ -63,7 +84,7 @@ int			get_index_mode_r(t_line *line, int *index)
 		if (ft_strstr(node->content, line->mode_r.s))
 		{
 			*index = i;
-			break ;
+			break;
 		}
 		node = node->next;
 	}
@@ -73,7 +94,7 @@ int			get_index_mode_r(t_line *line, int *index)
 		return (0);
 }
 
-void		mode_r(t_line *line)
+void mode_r(t_line *line)
 {
 	if (!line->mode_r.flag)
 	{
@@ -89,9 +110,9 @@ void		mode_r(t_line *line)
 	}
 }
 
-void		prompte_mode_r(char c, char **str)
+void prompte_mode_r(char c, char **str)
 {
-	char	ttab[2];
+	char ttab[2];
 
 	ttab[0] = c;
 	ttab[1] = '\0';
@@ -101,7 +122,7 @@ void		prompte_mode_r(char c, char **str)
 		*str = ft_strdup(ttab);
 }
 
-void		print_prompte_(t_line *line, int error)
+void print_prompte_(t_line *line, int error)
 {
 	line->mode_r.y = line->c_o.y + count_row(line);
 	tputs(tgoto(tgetstr("cm", 0), 0, line->mode_r.y), 0, ft_output);
@@ -113,10 +134,10 @@ void		print_prompte_(t_line *line, int error)
 	ft_putchar(' ');
 }
 
-void		search_mode_r(t_line *line, t_node **current)
+void search_mode_r(t_line *line, t_node **current)
 {
-	t_node	*node;
-	int		k;
+	t_node *node;
+	int k;
 
 	k = 0;
 	node = NULL;
@@ -142,10 +163,10 @@ void		search_mode_r(t_line *line, t_node **current)
 	}
 }
 
-void		delet_mode_r(char **str, t_line *line)
+void delet_mode_r(char **str, t_line *line)
 {
-	char	*tmp;
-	int		len;
+	char *tmp;
+	int len;
 
 	len = ft_strlen(*str);
 	if (!len)

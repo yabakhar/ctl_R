@@ -14,11 +14,39 @@
 
 static t_node *g_history_head;
 
+void ft_rev_list(t_node **history)
+{
+	while ((*history))
+	{
+		if ((*history)->next == NULL)
+			break;
+		(*history) = (*history)->next;
+	}
+}
+
+void print_in_history(const char *file)
+{
+	int fd;
+	t_node *new;
+
+	new = add_to_history(NULL);
+	ft_rev_list(&(new));
+	if ((fd = open(file, O_RDWR | O_TRUNC | O_CREAT, 00600)) == -1)
+		return ;
+	while (new)
+	{
+		ft_putendl_fd(new->content,fd);
+		new = new->prev;
+	}
+	close(fd);
+}
+
 void	ft_free_history(void)
 {
 	t_node *new;
 
 	new = add_to_history(NULL);
+	
 	while (new)
 	{
 		ft_strdel(&(new->content));

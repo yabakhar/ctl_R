@@ -15,6 +15,7 @@
 void	exit_blt(t_miniast **root, t_lexer **lex,
 	t_env **env_list, char **buff)
 {
+	print_in_history(PATH_HISTORY_FILE);
 	ft_free_history();
 	if (lex)
 		ft_free_tokenz(lex);
